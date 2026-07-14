@@ -24,6 +24,7 @@ export function ProjectSidebar({ isOpen, onClose }: ProjectSidebarProps) {
     <aside
       aria-hidden={!isOpen}
       aria-label="Project navigation"
+      inert={!isOpen}
       className={cn(
         "fixed top-16 bottom-4 left-4 z-40 flex w-80 flex-col rounded-2xl border border-surface-border bg-surface/95 p-4 shadow-2xl backdrop-blur transition-transform duration-200 ease-out",
         isOpen
