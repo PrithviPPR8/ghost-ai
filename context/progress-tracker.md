@@ -4,15 +4,15 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Not started
+- Design system complete
 
 ## Current Goal
 
-- Define the immediate implementation goal here.
+- Begin the next feature unit defined by the product roadmap.
 
 ## Completed
 
-- None yet.
+- Design system: configured shadcn/ui with the dark theme tokens, added Button, Card, Dialog, Input, Tabs, Textarea, and ScrollArea, installed Lucide React, and added the shared `cn()` utility.
 
 ## In Progress
 
@@ -20,7 +20,7 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Next Up
 
-- Add the next planned feature unit here.
+- Select and implement the next feature unit.
 
 ## Open Questions
 
@@ -32,4 +32,4 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Session Notes
 
-- Add context needed to resume work in the next session.
+- Design system implementation completed on 2026-07-14. `npm run lint` and `npm run build` pass.
