@@ -4,7 +4,7 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Editor workspace layout complete
+- Project dialogs and editor home complete
 
 ## Current Goal
 
@@ -15,6 +15,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Design system: configured shadcn/ui with the dark theme tokens, added Button, Card, Dialog, Input, Tabs, Textarea, and ScrollArea, installed Lucide React, and added the shared `cn()` utility.
 - Editor shell: added the fixed editor navbar with a project-sidebar toggle and a floating, tabbed project sidebar with empty states and a New Project action.
 - Editor workspace integration: composed the editor navbar and project sidebar in a shared layout around the full-height editor surface.
+- Project dialogs & editor home: added mocked create, rename, and delete project flows; live slug preview; owned-project sidebar actions; mobile sidebar backdrop; and the editor home empty state.
 
 ## In Progress
 
@@ -32,9 +33,11 @@ Update this file whenever the current phase, active feature, or implementation s
 
 - The editor workspace layout owns sidebar visibility state. The navbar and project sidebar remain controlled, reusable components.
 - The existing shadcn dialog primitives provide the standard dialog pattern (title, description, and footer actions) and use the token-backed global theme.
+- Project dialogs own temporary mock project state through a dedicated client hook. No API or persistence boundary is introduced until project persistence is specified.
 
 ## Session Notes
 
 - Design system implementation completed on 2026-07-14. `npm run lint` and `npm run build` pass.
 - Editor shell implementation completed on 2026-07-14. `npm run lint` and `npm run build` pass.
 - Editor workspace integration completed on 2026-07-14. `npm run lint` and `npm run build` pass.
+- Project dialogs & editor home completed on 2026-07-14. `npm run lint` and `npm run build` pass.
