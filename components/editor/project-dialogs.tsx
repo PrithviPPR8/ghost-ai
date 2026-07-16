@@ -53,6 +53,7 @@ function ProjectNameField({
         onChange={(event) => onChange(event.target.value)}
         placeholder="Architecture workspace"
         value={value}
+        className="text-copy-secondary"
       />
     </div>
   );
