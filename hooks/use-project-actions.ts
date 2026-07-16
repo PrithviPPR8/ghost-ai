@@ -64,6 +64,7 @@ export function useProjectActions(): UseProjectActionsResult {
   const [projectName, setProjectName] = useState("");
   const [roomIdSuffix, setRoomIdSuffix] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const roomIdPreview = useMemo(
     () => createRoomId(projectName, roomIdSuffix || "xxxxxxxx"),
     [projectName, roomIdSuffix],
@@ -108,6 +109,7 @@ export function useProjectActions(): UseProjectActionsResult {
     setIsLoading(true);
 
     try {
+      setErrorMessage(null);
       const response = await fetch("/api/projects", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -120,8 +122,10 @@ export function useProjectActions(): UseProjectActionsResult {
 
       closeDialog();
       router.push(`/editor/${id}`);
+      router.refresh();
     } catch (error) {
       console.error(error);
+      setErrorMessage(error instanceof Error ? error.message : "Unable to create the project.");
     } finally {
       setIsLoading(false);
     }
