@@ -1,13 +1,6 @@
-"use client";
-
-import { Plus } from "lucide-react";
-
-import { useProjectDialogActions } from "@/components/editor/project-dialog-context";
-import { Button } from "@/components/ui/button";
+import { EditorHomeActions } from "@/components/editor/editor-home-actions";
 
 export default function EditorPage() {
-  const { openCreateDialog } = useProjectDialogActions();
-
   return (
     <div className="flex min-h-[calc(100dvh-3.5rem)] items-center justify-center px-6">
       <div className="max-w-md text-center">
@@ -17,10 +10,7 @@ export default function EditorPage() {
         <p className="mt-3 text-sm leading-6 text-copy-muted">
           Start a new architecture workspace, or choose a project from the sidebar.
         </p>
-        <Button className="mt-6" onClick={openCreateDialog} size="lg">
-          <Plus />
-          New Project
-        </Button>
+        <EditorHomeActions />
       </div>
     </div>
   );

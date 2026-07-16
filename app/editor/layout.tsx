@@ -1,9 +1,19 @@
 import { EditorWorkspaceLayout } from "@/components/editor/editor-workspace-layout";
+import { getCurrentUserProjects } from "@/lib/projects";
 
-export default function EditorLayout({
+export default async function EditorLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <EditorWorkspaceLayout>{children}</EditorWorkspaceLayout>;
+  const { ownedProjects, sharedProjects } = await getCurrentUserProjects();
+
+  return (
+    <EditorWorkspaceLayout
+      ownedProjects={ownedProjects}
+      sharedProjects={sharedProjects}
+    >
+      {children}
+    </EditorWorkspaceLayout>
+  );
 }
