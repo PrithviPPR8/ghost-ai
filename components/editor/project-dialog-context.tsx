@@ -2,12 +2,12 @@
 
 import { createContext, useContext, type ReactNode } from "react";
 
-import type { MockProject } from "@/hooks/use-project-dialogs";
+import type { EditorProject } from "@/lib/projects";
 
 interface ProjectDialogActions {
   openCreateDialog: () => void;
-  openDeleteDialog: (project: MockProject) => void;
-  openRenameDialog: (project: MockProject) => void;
+  openDeleteDialog: (project: EditorProject) => void;
+  openRenameDialog: (project: EditorProject) => void;
 }
 
 const ProjectDialogContext = createContext<ProjectDialogActions | null>(null);

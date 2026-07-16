@@ -6,46 +6,29 @@ import { EditorNavbar } from "@/components/editor/editor-navbar";
 import { ProjectDialogProvider } from "@/components/editor/project-dialog-context";
 import { ProjectDialogs } from "@/components/editor/project-dialogs";
 import { ProjectSidebar } from "@/components/editor/project-sidebar";
-import {
-  useProjectDialogs,
-  type MockProject,
-} from "@/hooks/use-project-dialogs";
+import { useProjectActions } from "@/hooks/use-project-actions";
+import type { EditorProject } from "@/lib/projects";
 
 interface EditorWorkspaceLayoutProps {
   children: ReactNode;
+  ownedProjects: EditorProject[];
+  sharedProjects: EditorProject[];
 }
 
-const MOCK_PROJECTS: MockProject[] = [
-  {
-    id: "realtime-collaboration",
-    name: "Realtime collaboration",
-    slug: "realtime-collaboration",
-    access: "owned",
-  },
-  {
-    id: "event-pipeline",
-    name: "Event pipeline",
-    slug: "event-pipeline",
-    access: "owned",
-  },
-  {
-    id: "shared-payment-platform",
-    name: "Payment platform",
-    slug: "payment-platform",
-    access: "shared",
-  },
-];
-
-export function EditorWorkspaceLayout({ children }: EditorWorkspaceLayoutProps) {
+export function EditorWorkspaceLayout({
+  children,
+  ownedProjects,
+  sharedProjects,
+}: EditorWorkspaceLayoutProps) {
   const [isProjectSidebarOpen, setIsProjectSidebarOpen] = useState(false);
-  const projectDialogs = useProjectDialogs(MOCK_PROJECTS);
+  const projectActions = useProjectActions();
 
   return (
     <ProjectDialogProvider
       value={{
-        openCreateDialog: projectDialogs.openCreateDialog,
-        openDeleteDialog: projectDialogs.openDeleteDialog,
-        openRenameDialog: projectDialogs.openRenameDialog,
+        openCreateDialog: projectActions.openCreateDialog,
+        openDeleteDialog: projectActions.openDeleteDialog,
+        openRenameDialog: projectActions.openRenameDialog,
       }}
     >
       <div className="min-h-dvh bg-base">
@@ -66,23 +49,23 @@ export function EditorWorkspaceLayout({ children }: EditorWorkspaceLayoutProps) 
         <ProjectSidebar
           isOpen={isProjectSidebarOpen}
           onClose={() => setIsProjectSidebarOpen(false)}
-          onCreate={projectDialogs.openCreateDialog}
-          onDelete={projectDialogs.openDeleteDialog}
-          onRename={projectDialogs.openRenameDialog}
-          projects={projectDialogs.projects}
+          onCreate={projectActions.openCreateDialog}
+          onDelete={projectActions.openDeleteDialog}
+          onRename={projectActions.openRenameDialog}
+          projects={[...ownedProjects, ...sharedProjects]}
         />
         <main className="min-h-dvh pt-14">{children}</main>
         <ProjectDialogs
-          activeProject={projectDialogs.activeProject}
-          dialogMode={projectDialogs.dialogMode}
-          isLoading={projectDialogs.isLoading}
-          onClose={projectDialogs.closeDialog}
-          onCreate={projectDialogs.createProject}
-          onDelete={projectDialogs.deleteProject}
-          onProjectNameChange={projectDialogs.setProjectName}
-          onRename={projectDialogs.renameProject}
-          projectName={projectDialogs.projectName}
-          slugPreview={projectDialogs.slugPreview}
+          activeProject={projectActions.activeProject}
+          dialogMode={projectActions.dialogMode}
+          isLoading={projectActions.isLoading}
+          onClose={projectActions.closeDialog}
+          onCreate={projectActions.createProject}
+          onDelete={projectActions.deleteProject}
+          onProjectNameChange={projectActions.setProjectName}
+          onRename={projectActions.renameProject}
+          projectName={projectActions.projectName}
+          roomIdPreview={projectActions.roomIdPreview}
         />
       </div>
     </ProjectDialogProvider>

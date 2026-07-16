@@ -13,14 +13,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import type { MockProject, ProjectDialogMode } from "@/hooks/use-project-dialogs";
+import type { ProjectDialogMode } from "@/hooks/use-project-actions";
+import type { EditorProject } from "@/lib/projects";
 
 interface ProjectDialogsProps {
-  activeProject: MockProject | null;
+  activeProject: EditorProject | null;
   dialogMode: ProjectDialogMode;
   isLoading: boolean;
   projectName: string;
-  slugPreview: string;
+  roomIdPreview: string;
   onClose: () => void;
   onCreate: () => Promise<void>;
   onDelete: () => Promise<void>;
@@ -70,7 +71,7 @@ export function ProjectDialogs({
   dialogMode,
   isLoading,
   projectName,
-  slugPreview,
+  roomIdPreview,
   onClose,
   onCreate,
   onDelete,
@@ -97,7 +98,7 @@ export function ProjectDialogs({
               value={projectName}
             />
             <p className="mt-3 text-sm text-copy-muted">
-              Slug preview: <span className="font-mono text-copy-secondary">{slugPreview || "project-slug"}</span>
+              Room ID preview: <span className="font-mono text-copy-secondary">{roomIdPreview}</span>
             </p>
             <DialogFooter className={dialogFooterClassName}>
               <DialogClose render={<Button disabled={isLoading} type="button" variant="outline" />}>
@@ -142,7 +143,7 @@ export function ProjectDialogs({
           <DialogHeader>
             <DialogTitle>Delete project</DialogTitle>
             <DialogDescription>
-              Delete {activeProject?.name ?? "this project"}? This mock action cannot be undone.
+              Delete {activeProject?.name ?? "this project"}? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className={dialogFooterClassName}>

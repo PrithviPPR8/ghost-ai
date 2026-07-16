@@ -4,16 +4,16 @@ import { Pencil, Plus, Trash2, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { MockProject } from "@/hooks/use-project-dialogs";
+import type { EditorProject } from "@/lib/projects";
 import { cn } from "@/lib/utils";
 
 interface ProjectSidebarProps {
   isOpen: boolean;
   onClose: () => void;
   onCreate: () => void;
-  onDelete: (project: MockProject) => void;
-  onRename: (project: MockProject) => void;
-  projects: MockProject[];
+  onDelete: (project: EditorProject) => void;
+  onRename: (project: EditorProject) => void;
+  projects: EditorProject[];
 }
 
 function EmptyProjectState({ children }: { children: React.ReactNode }) {
@@ -45,7 +45,7 @@ function ProjectList({
               {project.name}
             </p>
             <p className="truncate font-mono text-xs text-copy-muted">
-              {project.slug}
+              {project.id}
             </p>
           </div>
           {project.access === "owned" && (
