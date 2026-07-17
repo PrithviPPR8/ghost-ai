@@ -1,8 +1,8 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
-
 import { prisma } from "@/lib/prisma";
+import { getCurrentProjectIdentity } from "@/lib/project-access";
+import type { ProjectAccess } from "@/lib/project-access";
 
-export type ProjectAccess = "owned" | "shared";
+export type { ProjectAccess } from "@/lib/project-access";
 
 export interface EditorProject {
   access: ProjectAccess;
@@ -10,38 +10,25 @@ export interface EditorProject {
   name: string;
 }
 
-function getPrimaryEmail(user: Awaited<ReturnType<typeof currentUser>>) {
-  if (!user) {
-    return null;
-  }
-
-  return (
-    user.emailAddresses.find(
-      (email) => email.id === user.primaryEmailAddressId,
-    )?.emailAddress ?? user.emailAddresses[0]?.emailAddress ?? null
-  );
-}
-
 export async function getCurrentUserProjects(): Promise<{
   ownedProjects: EditorProject[];
   sharedProjects: EditorProject[];
 }> {
-  const { userId } = await auth();
+  const identity = await getCurrentProjectIdentity();
 
-  if (!userId) {
+  if (!identity) {
     return { ownedProjects: [], sharedProjects: [] };
   }
 
-  const email = getPrimaryEmail(await currentUser());
   const [ownedProjects, sharedProjects] = await Promise.all([
     prisma.project.findMany({
-      where: { ownerId: userId },
+      where: { ownerId: identity.userId },
       orderBy: { createdAt: "desc" },
       select: { id: true, name: true },
     }),
-    email
+    identity.email
       ? prisma.project.findMany({
-          where: { collaborators: { some: { email } } },
+          where: { collaborators: { some: { email: identity.email } } },
           orderBy: { createdAt: "desc" },
           select: { id: true, name: true },
         })

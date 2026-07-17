@@ -3,6 +3,10 @@ export interface ProjectNameInput {
   name?: string;
 }
 
+export interface CollaboratorInviteInput {
+  email: string;
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -30,6 +34,31 @@ export async function readProjectNameInput(
     }
 
     return body;
+  } catch {
+    return null;
+  }
+}
+
+export async function readCollaboratorInviteInput(
+  request: Request,
+): Promise<CollaboratorInviteInput | null> {
+  try {
+    const body: unknown = await request.json();
+
+    if (!isRecord(body) || typeof body.email !== "string") {
+      return null;
+    }
+
+    const email = body.email.trim().toLowerCase();
+
+    if (
+      email.length > 320 ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    ) {
+      return null;
+    }
+
+    return { email };
   } catch {
     return null;
   }
