@@ -28,12 +28,13 @@ function EmptyProjectState({ children }: { children: React.ReactNode }) {
 
 function ProjectList({
   currentProjectId,
+  onClose,
   onDelete,
   onRename,
   projects,
 }: Pick<
   ProjectSidebarProps,
-  "currentProjectId" | "onDelete" | "onRename" | "projects"
+  "currentProjectId" | "onClose" | "onDelete" | "onRename" | "projects"
 >) {
   if (!projects.length) {
     return <EmptyProjectState>No projects yet.</EmptyProjectState>;
@@ -55,6 +56,7 @@ function ProjectList({
           <Link
             className="min-w-0 flex-1 rounded-xl px-1 outline-none focus-visible:ring-2 focus-visible:ring-brand/50"
             href={`/editor/${project.id}`}
+            onClick={onClose}
           >
             <p className="truncate text-sm font-medium text-copy-primary">
               {project.name}
@@ -136,6 +138,7 @@ export function ProjectSidebar({
             onDelete={onDelete}
             onRename={onRename}
             projects={ownedProjects}
+            onClose={onClose}
           />
         </TabsContent>
         <TabsContent className="pt-4" value="shared">
@@ -145,6 +148,7 @@ export function ProjectSidebar({
               onDelete={onDelete}
               onRename={onRename}
               projects={sharedProjects}
+              onClose={onClose}
             />
           ) : (
             <EmptyProjectState>No shared projects yet.</EmptyProjectState>

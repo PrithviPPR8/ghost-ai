@@ -89,6 +89,11 @@ export function ShareDialog({
       return;
     }
 
+    setCollaborators(null);
+    setEmail("");
+    setError(null);
+    setIsCopied(false);
+
     let isActive = true;
 
     fetch(`/api/projects/${projectId}/collaborators`)
@@ -218,13 +223,6 @@ export function ShareDialog({
   }
 
   function handleOpenChange(nextOpen: boolean) {
-    if (!nextOpen) {
-      setCollaborators(null);
-      setEmail("");
-      setError(null);
-      setIsCopied(false);
-    }
-
     onOpenChange(nextOpen);
   }
 
