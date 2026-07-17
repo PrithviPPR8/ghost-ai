@@ -4,11 +4,11 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Project API routes and editor-home persistence wiring are implemented; initial Prisma migration application remains blocked by the local Windows TLS provider.
+- Share dialog is implemented; initial Prisma migration application remains blocked by the local Windows TLS provider.
 
 ## Current Goal
 
-- Apply the initial Prisma migration from an environment where Prisma's schema engine can establish TLS, then verify project persistence end to end.
+- Apply the initial Prisma migration from an environment where Prisma's schema engine can establish TLS, then verify project persistence and collaborator sharing end to end.
 
 ## Completed
 
@@ -19,6 +19,8 @@ Update this file whenever the current phase, active feature, or implementation s
 - Prisma schema and data layer: added `Project` and `ProjectCollaborator` models, their relationships and indexes, a cached Prisma singleton that selects Accelerate or the PostgreSQL adapter by URL, and the initial migration SQL.
 - Project API routes: added authenticated list and create endpoints plus owner-protected rename and delete endpoints. Request names are validated, creation defaults to `Untitled Project`, and unauthenticated and non-owner mutations receive `401` and `403` responses respectively.
 - Editor home persistence wiring: replaced mock sidebar data with server-rendered owned and shared project lists, added `useProjectActions` for create, rename, and delete mutations, and aligned generated project IDs with Liveblocks room IDs.
+- Editor workspace shell: added server-side project access validation for `/editor/[roomId]`, an access-denied state for unavailable projects, and the project-context workspace placeholders for the canvas and future AI chat.
+- Share dialog: added project-scoped collaborator APIs, owner-only invite and removal actions, Clerk-backed display-name and avatar enrichment with email fallbacks, and a workspace share dialog with read-only collaborator access and project-link copying.
 
 ## In Progress
 
@@ -26,7 +28,7 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Next Up
 
-- Verify project creation, rename, and deletion against the database after the initial migration is applied.
+- Verify project creation, rename, deletion, and collaborator sharing against the database after the initial migration is applied.
 
 ## Open Questions
 
@@ -39,6 +41,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - The editor layout fetches owned and shared projects server-side, while `useProjectActions` owns client-side dialog state and API mutations.
 - Runtime database traffic uses `DATABASE_URL`; Prisma CLI commands prefer `DIRECT_URL` and otherwise convert Prisma Postgres's pooled hostname to its direct hostname for migrations and administration.
 - The Prisma singleton is exposed as the base generated client type so shared model delegates remain callable for both direct PostgreSQL and Accelerate connections.
+- Collaborator records are normalized to lowercase email addresses; the collaborator API enriches display data from Clerk at read time and keeps the database as the sole project-access store.
 
 ## Session Notes
 
@@ -49,3 +52,5 @@ Update this file whenever the current phase, active feature, or implementation s
 - Prisma schema and data layer implemented on 2026-07-14. `npx prisma generate`, `npm run lint`, and `npm run build` pass. Applying the migration is blocked locally by Prisma schema-engine TLS error `P1011`.
 - Project API routes implemented on 2026-07-15. `npm run lint` and `npm run build` pass.
 - Editor home persistence wiring implemented on 2026-07-16. `npm run lint` and `npm run build` pass.
+- Editor workspace shell implemented on 2026-07-16. `npm run build` passes; `npm run lint` reports the pre-existing unused `errorMessage` warning in `hooks/use-project-actions.ts`.
+- Share dialog implemented on 2026-07-16. `npm run build` passes.

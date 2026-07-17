@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Pencil, Plus, Trash2, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import type { EditorProject } from "@/lib/projects";
 import { cn } from "@/lib/utils";
 
 interface ProjectSidebarProps {
+  currentProjectId?: string;
   isOpen: boolean;
   onClose: () => void;
   onCreate: () => void;
@@ -25,10 +27,14 @@ function EmptyProjectState({ children }: { children: React.ReactNode }) {
 }
 
 function ProjectList({
+  currentProjectId,
   onDelete,
   onRename,
   projects,
-}: Pick<ProjectSidebarProps, "onDelete" | "onRename" | "projects">) {
+}: Pick<
+  ProjectSidebarProps,
+  "currentProjectId" | "onDelete" | "onRename" | "projects"
+>) {
   if (!projects.length) {
     return <EmptyProjectState>No projects yet.</EmptyProjectState>;
   }
@@ -37,17 +43,26 @@ function ProjectList({
     <ul className="space-y-2" aria-label="Projects">
       {projects.map((project) => (
         <li
-          className="flex items-center gap-2 rounded-xl border border-surface-border bg-elevated/60 p-2"
+          aria-current={project.id === currentProjectId ? "page" : undefined}
+          className={cn(
+            "flex items-center gap-2 rounded-xl border p-2",
+            project.id === currentProjectId
+              ? "border-brand bg-accent-dim"
+              : "border-surface-border bg-elevated/60",
+          )}
           key={project.id}
         >
-          <div className="min-w-0 flex-1 px-1">
+          <Link
+            className="min-w-0 flex-1 rounded-xl px-1 outline-none focus-visible:ring-2 focus-visible:ring-brand/50"
+            href={`/editor/${project.id}`}
+          >
             <p className="truncate text-sm font-medium text-copy-primary">
               {project.name}
             </p>
             <p className="truncate font-mono text-xs text-copy-muted">
               {project.id}
             </p>
-          </div>
+          </Link>
           {project.access === "owned" && (
             <div className="flex items-center gap-1">
               <Button
@@ -75,6 +90,7 @@ function ProjectList({
 }
 
 export function ProjectSidebar({
+  currentProjectId,
   isOpen,
   onClose,
   onCreate,
@@ -116,6 +132,7 @@ export function ProjectSidebar({
         </TabsList>
         <TabsContent className="pt-4" value="my-projects">
           <ProjectList
+            currentProjectId={currentProjectId}
             onDelete={onDelete}
             onRename={onRename}
             projects={ownedProjects}
@@ -124,6 +141,7 @@ export function ProjectSidebar({
         <TabsContent className="pt-4" value="shared">
           {sharedProjects.length ? (
             <ProjectList
+              currentProjectId={currentProjectId}
               onDelete={onDelete}
               onRename={onRename}
               projects={sharedProjects}
