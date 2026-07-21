@@ -67,6 +67,7 @@ function CanvasSurface() {
       edges: { initial: [] },
     });
   const { screenToFlowPosition } = useReactFlow<CanvasNode, CanvasEdge>();
+  const clientId = useRef(crypto.randomUUID());
   const nodeCounter = useRef(0);
 
   function handleDragOver(event: DragEvent<HTMLDivElement>) {
@@ -90,7 +91,7 @@ function CanvasSurface() {
       {
         type: "add",
         item: {
-          id: `${payload.shape}-${timestamp}-${nodeCounter.current}`,
+          id: `${payload.shape}-${clientId.current}-${timestamp}-${nodeCounter.current}`,
           type: "canvasNode",
           position: screenToFlowPosition({ x: event.clientX, y: event.clientY }),
           style: { width: payload.width, height: payload.height },
