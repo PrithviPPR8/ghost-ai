@@ -4,11 +4,11 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Share dialog is implemented; initial Prisma migration application remains blocked by the local Windows TLS provider.
+- Shape-panel canvas interaction is in progress; the initial Prisma migration application remains blocked by the local Windows TLS provider.
 
 ## Current Goal
 
-- Apply the initial Prisma migration from an environment where Prisma's schema engine can establish TLS, then verify project persistence and collaborator sharing end to end.
+- Add the shape panel and drag-and-drop node creation to the collaborative canvas.
 
 ## Completed
 
@@ -21,13 +21,17 @@ Update this file whenever the current phase, active feature, or implementation s
 - Editor home persistence wiring: replaced mock sidebar data with server-rendered owned and shared project lists, added `useProjectActions` for create, rename, and delete mutations, and aligned generated project IDs with Liveblocks room IDs.
 - Editor workspace shell: added server-side project access validation for `/editor/[roomId]`, an access-denied state for unavailable projects, and the project-context workspace placeholders for the canvas and future AI chat.
 - Share dialog: added project-scoped collaborator APIs, owner-only invite and removal actions, Clerk-backed display-name and avatar enrichment with email fallbacks, and a workspace share dialog with read-only collaborator access and project-link copying.
+- Liveblocks setup: added typed cursor and thinking presence, user metadata, a cached server client with deterministic cursor colors, and a project-membership-protected auth route that creates private rooms idempotently and returns a project-scoped session token.
+- Base canvas: replaced the workspace placeholder with a server-composed, Liveblocks-backed React Flow canvas using room-scoped authentication, empty synchronized node and edge state, loose connections, a minimap, and a dot-pattern background.
 
 ## In Progress
 
+- Implement the bottom shape panel, canvas drop handling, and basic custom node renderer.
 - Apply `20260714170000_init` once the local Prisma schema engine TLS issue is resolved or from a compatible environment.
 
 ## Next Up
 
+- Verify the shape-panel canvas interaction, then continue with the next scoped canvas feature.
 - Verify project creation, rename, deletion, and collaborator sharing against the database after the initial migration is applied.
 
 ## Open Questions
@@ -42,6 +46,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Runtime database traffic uses `DATABASE_URL`; Prisma CLI commands prefer `DIRECT_URL` and otherwise convert Prisma Postgres's pooled hostname to its direct hostname for migrations and administration.
 - The Prisma singleton is exposed as the base generated client type so shared model delegates remain callable for both direct PostgreSQL and Accelerate connections.
 - Collaborator records are normalized to lowercase email addresses; the collaborator API enriches display data from Clerk at read time and keeps the database as the sole project-access store.
+- The server workspace page continues to own access validation; the client canvas component is limited to Liveblocks room setup and React Flow synchronization.
 
 ## Session Notes
 
@@ -54,3 +59,5 @@ Update this file whenever the current phase, active feature, or implementation s
 - Editor home persistence wiring implemented on 2026-07-16. `npm run lint` and `npm run build` pass.
 - Editor workspace shell implemented on 2026-07-16. `npm run build` passes; `npm run lint` reports the pre-existing unused `errorMessage` warning in `hooks/use-project-actions.ts`.
 - Share dialog implemented on 2026-07-16. `npm run build` passes.
+- Liveblocks setup implemented on 2026-07-19. Targeted Liveblocks lint and `npm run build` pass. Full `npm run lint` remains blocked by the pre-existing synchronous state update error in `components/editor/share-dialog.tsx` and the unused `errorMessage` warning in `hooks/use-project-actions.ts`.
+- Base canvas implemented on 2026-07-20. `npm run build` passes.

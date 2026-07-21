@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { AccessDenied } from "@/components/editor/access-denied";
+import { CollaborativeCanvas } from "@/components/editor/collaborative-canvas";
 import {
   getCurrentProjectIdentity,
   getProjectAccess,
@@ -25,15 +26,11 @@ export default async function EditorRoomPage({ params }: EditorRoomPageProps) {
   }
 
   return (
-    <section className="flex min-h-[calc(100dvh-3.5rem)] items-center justify-center bg-base px-6">
-      <div className="max-w-md text-center">
-        <h1 className="text-2xl font-semibold tracking-tight text-copy-primary">
-          {project.name}
-        </h1>
-        <p className="mt-3 text-sm leading-6 text-copy-muted">
-          Your architecture canvas will appear here.
-        </p>
-      </div>
+    <section
+      aria-label={`${project.name} architecture canvas`}
+      className="h-[calc(100dvh-3.5rem)] bg-base"
+    >
+      <CollaborativeCanvas roomId={project.id} />
     </section>
   );
 }
