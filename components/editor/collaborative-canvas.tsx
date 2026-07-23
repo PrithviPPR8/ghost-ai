@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type DragEvent } from "react";
+import { useCallback, useMemo, useRef, useState, type DragEvent } from "react";
 import { ClientSideSuspense, LiveblocksProvider, RoomProvider } from "@liveblocks/react/suspense";
 import { useLiveblocksFlow } from "@liveblocks/react-flow";
 import {
@@ -12,21 +12,29 @@ import {
   ReactFlow,
   ReactFlowProvider,
   useReactFlow,
+  type NodeProps,
+  type NodeTypes,
 } from "@xyflow/react";
 
 import "@liveblocks/react-flow/styles.css";
 import "@xyflow/react/dist/style.css";
 
 import { CanvasErrorBoundary } from "@/components/editor/canvas-error-boundary";
-import { CanvasNodeComponent } from "@/components/editor/canvas-node";
+import {
+  CanvasNodeComponent,
+  CanvasNodeShape as CanvasNodeShapePreview,
+} from "@/components/editor/canvas-node";
 import { ShapePanel } from "@/components/editor/shape-panel";
 import {
   CANVAS_SHAPE_DRAG_DATA_TYPE,
   DEFAULT_NODE_COLOR,
+  DEFAULT_NODE_TEXT_COLOR,
   NODE_SHAPES,
   type CanvasEdge,
   type CanvasNode,
+  type CanvasNodeColor,
   type CanvasNodeShape,
+  type CanvasNodeTextColor,
   type CanvasShapeDragPayload,
 } from "@/types/canvas";
 
@@ -67,12 +75,82 @@ function CanvasSurface() {
       edges: { initial: [] },
     });
   const { screenToFlowPosition } = useReactFlow<CanvasNode, CanvasEdge>();
+  const canvasRef = useRef<HTMLDivElement>(null);
   const clientId = useRef(crypto.randomUUID());
   const nodeCounter = useRef(0);
+  const nodesRef = useRef(nodes);
+  const [dragPreview, setDragPreview] = useState<DragPreview | null>(null);
+
+  nodesRef.current = nodes;
+
+  const handleNodeLabelChange = useCallback(
+    (nodeId: string, label: string) => {
+      const node = nodesRef.current.find((currentNode) => currentNode.id === nodeId);
+
+      if (!node || node.data.label === label) {
+        return;
+      }
+
+      onNodesChange([
+        {
+          id: nodeId,
+          item: {
+            ...node,
+            data: {
+              ...node.data,
+              label,
+            },
+          },
+          type: "replace",
+        },
+      ]);
+    },
+    [onNodesChange],
+  );
+
+  const handleNodeColorChange = useCallback(
+    (nodeId: string, color: CanvasNodeColor, textColor: CanvasNodeTextColor) => {
+      const node = nodesRef.current.find((currentNode) => currentNode.id === nodeId);
+
+      if (!node || (node.data.color === color && node.data.textColor === textColor)) {
+        return;
+      }
+
+      onNodesChange([
+        {
+          id: nodeId,
+          item: {
+            ...node,
+            data: {
+              ...node.data,
+              color,
+              textColor,
+            },
+          },
+          type: "replace",
+        },
+      ]);
+    },
+    [onNodesChange],
+  );
+
+  const nodeTypes = useMemo<NodeTypes>(
+    () => ({
+      canvasNode: (nodeProps) => (
+        <CanvasNodeComponent
+          {...(nodeProps as NodeProps<CanvasNode>)}
+          onColorChange={handleNodeColorChange}
+          onLabelChange={handleNodeLabelChange}
+        />
+      ),
+    }),
+    [handleNodeColorChange, handleNodeLabelChange],
+  );
 
   function handleDragOver(event: DragEvent<HTMLDivElement>) {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
+    updateDragPreview(event);
   }
 
   function handleDrop(event: DragEvent<HTMLDivElement>) {
@@ -81,6 +159,7 @@ function CanvasSurface() {
     const payload = readCanvasShapeDragPayload(event.dataTransfer);
 
     if (!payload) {
+      setDragPreview(null);
       return;
     }
 
@@ -99,15 +178,52 @@ function CanvasSurface() {
             label: "",
             color: DEFAULT_NODE_COLOR,
             shape: payload.shape,
+            textColor: DEFAULT_NODE_TEXT_COLOR,
           },
         },
       },
     ]);
+    setDragPreview(null);
+  }
+
+  function handleShapeDragStart(
+    event: DragEvent<HTMLButtonElement>,
+    payload: CanvasShapeDragPayload,
+  ) {
+    updateDragPreviewPosition(event, payload);
+  }
+
+  function updateDragPreview(event: DragEvent<HTMLDivElement>) {
+    const payload = readCanvasShapeDragPayload(event.dataTransfer);
+
+    if (!payload) {
+      return;
+    }
+
+    updateDragPreviewPosition(event, payload);
+  }
+
+  function updateDragPreviewPosition(
+    event: DragEvent<HTMLElement>,
+    payload: CanvasShapeDragPayload,
+  ) {
+    const canvasBounds = canvasRef.current?.getBoundingClientRect();
+
+    if (!canvasBounds) {
+      return;
+    }
+
+    setDragPreview({
+      ...payload,
+      x: event.clientX - canvasBounds.left,
+      y: event.clientY - canvasBounds.top,
+    });
   }
 
   return (
     <div
-      className="h-full w-full"
+      className="relative h-full w-full"
+      ref={canvasRef}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
@@ -116,7 +232,7 @@ function CanvasSurface() {
         edges={edges}
         fitView
         nodes={nodes}
-        nodeTypes={{ canvasNode: CanvasNodeComponent }}
+        nodeTypes={nodeTypes}
         onConnect={onConnect}
         onDelete={onDelete}
         onEdgesChange={onEdgesChange}
@@ -135,9 +251,43 @@ function CanvasSurface() {
           variant={BackgroundVariant.Dots}
         />
         <Panel position="bottom-center">
-          <ShapePanel />
+          <ShapePanel
+            onDragEnd={() => setDragPreview(null)}
+            onDragMove={updateDragPreviewPosition}
+            onDragStart={handleShapeDragStart}
+          />
         </Panel>
       </ReactFlow>
+      {dragPreview ? <ShapeDragPreview preview={dragPreview} /> : null}
+    </div>
+  );
+}
+
+interface DragPreview extends CanvasShapeDragPayload {
+  x: number;
+  y: number;
+}
+
+function ShapeDragPreview({ preview }: { preview: DragPreview }) {
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute z-50"
+      style={{
+        height: preview.height,
+        left: preview.x,
+        top: preview.y,
+        transform: "translate(-50%, -50%)",
+        width: preview.width,
+      }}
+    >
+      <CanvasNodeShapePreview
+        color={DEFAULT_NODE_COLOR}
+        label=""
+        preview
+        shape={preview.shape}
+        textColor={DEFAULT_NODE_TEXT_COLOR}
+      />
     </div>
   );
 }

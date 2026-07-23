@@ -4,11 +4,11 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Shape-panel canvas interaction is in progress; the initial Prisma migration application remains blocked by the local Windows TLS provider.
+- Canvas node resizing, inline label editing, and the predefined node color toolbar are complete; the initial Prisma migration application remains blocked by the local Windows TLS provider.
 
 ## Current Goal
 
-- Add the shape panel and drag-and-drop node creation to the collaborative canvas.
+- Continue with the next scoped canvas feature.
 
 ## Completed
 
@@ -23,15 +23,18 @@ Update this file whenever the current phase, active feature, or implementation s
 - Share dialog: added project-scoped collaborator APIs, owner-only invite and removal actions, Clerk-backed display-name and avatar enrichment with email fallbacks, and a workspace share dialog with read-only collaborator access and project-link copying.
 - Liveblocks setup: added typed cursor and thinking presence, user metadata, a cached server client with deterministic cursor colors, and a project-membership-protected auth route that creates private rooms idempotently and returns a project-scoped session token.
 - Base canvas: replaced the workspace placeholder with a server-composed, Liveblocks-backed React Flow canvas using room-scoped authentication, empty synchronized node and edge state, loose connections, a minimap, and a dot-pattern background.
+- Node-shape rendering and drag preview: replaced the placeholder renderer with CSS rectangle, pill, and circle variants plus scalable SVG diamond, hexagon, and cylinder variants. Selected nodes use brighter borders, and shape-panel drags show a cursor-attached preview without changing collaborative node creation.
+- Canvas node connection handles: added hover-revealed target handles on the top and left plus source handles on the right and bottom. The existing loose connection mode allows these handles to serve incoming and outgoing connections without changing node visuals or collaborative state.
+- Canvas node editing: added selected-node resize controls with shared minimum dimensions, plus centered inline label editing with an empty-label placeholder. Label updates use the existing Liveblocks node-change flow as users type, while blur and Escape close the editor without canvas drag or pan interactions.
+- Node color toolbar: added a floating palette above selected nodes. Each predefined swatch updates its paired background and text colors through the existing Liveblocks node-change flow, with active selection and a controlled text-color hover glow.
 
 ## In Progress
 
-- Implement the bottom shape panel, canvas drop handling, and basic custom node renderer.
 - Apply `20260714170000_init` once the local Prisma schema engine TLS issue is resolved or from a compatible environment.
 
 ## Next Up
 
-- Verify the shape-panel canvas interaction, then continue with the next scoped canvas feature.
+- Continue with the next scoped canvas feature.
 - Verify project creation, rename, deletion, and collaborator sharing against the database after the initial migration is applied.
 
 ## Open Questions
@@ -61,3 +64,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Share dialog implemented on 2026-07-16. `npm run build` passes.
 - Liveblocks setup implemented on 2026-07-19. Targeted Liveblocks lint and `npm run build` pass. Full `npm run lint` remains blocked by the pre-existing synchronous state update error in `components/editor/share-dialog.tsx` and the unused `errorMessage` warning in `hooks/use-project-actions.ts`.
 - Base canvas implemented on 2026-07-20. `npm run build` passes.
+- Node-shape rendering and drag-preview implementation completed on 2026-07-22. `npm run build` compiles successfully and clears TypeScript checking.
+- Canvas node connection handles implemented on 2026-07-22. `npm run build` passes.
+- Canvas node resizing and inline label editing implemented on 2026-07-22. `npx tsc --noEmit` and `npm run build` pass.
+- Node color toolbar implemented on 2026-07-22. `npx tsc --noEmit` and `npm run build` pass.
