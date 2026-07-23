@@ -15,12 +15,25 @@ import {
   CANVAS_SHAPE_DRAG_DATA_TYPE,
   NODE_SHAPE_SIZES,
   type CanvasNodeShape,
+  type CanvasShapeDragPayload,
 } from "@/types/canvas";
 
 interface ShapeToolbarItem {
   icon: LucideIcon;
   label: string;
   shape: CanvasNodeShape;
+}
+
+interface ShapePanelProps {
+  onDragEnd?: () => void;
+  onDragMove?: (
+    event: DragEvent<HTMLButtonElement>,
+    payload: CanvasShapeDragPayload,
+  ) => void;
+  onDragStart?: (
+    event: DragEvent<HTMLButtonElement>,
+    payload: CanvasShapeDragPayload,
+  ) => void;
 }
 
 const SHAPE_TOOLBAR_ITEMS: ShapeToolbarItem[] = [
@@ -32,7 +45,7 @@ const SHAPE_TOOLBAR_ITEMS: ShapeToolbarItem[] = [
   { shape: "hexagon", label: "Hexagon", icon: Hexagon },
 ];
 
-export function ShapePanel() {
+export function ShapePanel({ onDragEnd, onDragMove, onDragStart }: ShapePanelProps) {
   function handleDragStart(
     event: DragEvent<HTMLButtonElement>,
     shape: CanvasNodeShape,
@@ -42,6 +55,7 @@ export function ShapePanel() {
       CANVAS_SHAPE_DRAG_DATA_TYPE,
       JSON.stringify({ shape, ...NODE_SHAPE_SIZES[shape] }),
     );
+    onDragStart?.(event, { shape, ...NODE_SHAPE_SIZES[shape] });
   }
 
   return (
@@ -52,6 +66,8 @@ export function ShapePanel() {
           className="nodrag nopan flex h-9 w-9 cursor-grab items-center justify-center rounded-xl text-copy-muted transition-colors hover:bg-subtle hover:text-copy-primary active:cursor-grabbing"
           draggable
           key={shape}
+          onDragEnd={onDragEnd}
+          onDrag={(event) => onDragMove?.(event, { shape, ...NODE_SHAPE_SIZES[shape] })}
           onDragStart={(event) => handleDragStart(event, shape)}
           title={label}
           type="button"
